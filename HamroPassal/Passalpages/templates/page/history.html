@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %} Purchase History -Hamro passal {% endblock %}
+
+{% block containt %} 
+    <style>
+
+        .container {
+            width: 80%;
+            min-height:68vh;
+            margin: 20px auto;
+        }
+        .purchase {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+        }
+        .purchase:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .purchase-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .purchase-details {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .purchase-details h3 {
+            margin-top: 0;
+        }
+        .order-completed {
+            color: green;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if no_history %}
+        <h1>Sorry No History to Show here</h1>
+
+        {% else %}
+        {% for eachShip in shippinginfos %}
+        <div class="purchase" onclick="toggleDetails('{{eachShip.id}}')">
+            <div class="purchase-info">
+                <div>Shipping ID: {{eachShip.shipping_number}}</div>
+                <div>Delivery Date: {{eachShip.deliver_Date_on}}</div>
+                <div>Order completed: {{eachShip.recived_items}}</div>
+            </div>
+            <div id="{{eachShip.id}}-details" class="purchase-details" style="display:none;">
+                <h3>Product List</h3>
+                <ol>
+                    {% for eachcheckout in checkout_product %}
+                    {% for each_product in eachcheckout%}
+                    <li><ul>
+                        <li>Name:  {{each_product.product.product_name}}</li><li>   Price: {{each_product.product.amount}} </li><li> Quantity: {{each_product.quantity}} </li>
+                    </ul>
+                    </li>
+                    {% endfor%}
+                    {% endfor%}
+                </ol>
+                <h3>Contact List</h3>
+                <ul>
+                    <li>Name: {{checkoutinfo.user.first_name}} {{checkoutinfo.user.last_name}}</li>
+                    <li>Email: {{checkoutinfo.shipemail}}</li>
+                    <li>Phone: {{checkoutinfo.Phonenum}}</li>
+                </ul>
+
+                <div><h3>Additional Note<h3>
+                    {{checkoutinfo.Order_Notes}}
+                </div>
+            </div>
+        </div>
+
+        {% endfor%}
+        {% endif%}
+    </div>
+
+    <script>
+        function toggleDetails(purchaseId) {
+            var details = document.getElementById(purchaseId + '-details');
+            var orderCompleted = document.getElementById('order-completed-' + purchaseId);
+            if (details.style.display === "block") {
+                details.style.display = "none";
+                orderCompleted.style.display = "none";
+            } else {
+                details.style.display = "block";
+                orderCompleted.style.display = "block";
+            }
+        }
+
+        function markOrderCompleted(purchaseId) {
+            var orderCompleted = document.getElementById('order-completed-' + purchaseId);
+            orderCompleted.textContent = "Order Completed";
+            orderCompleted.style.color = "green";
+        }
+    </script>
+
+
+{% endblock %}

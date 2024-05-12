@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Checkout -Hamro passal {% endblock %}
+
+{% block containt %}
+  <style>
+
+    .username{
+      font-weight:600;
+      font-size:20px;
+    }
+    .container {
+      position:relative;
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      position: relative; /* To make position: fixed work for child elements */
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    textarea {
+      width: calc(100% - 12px);
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #4caf50;
+    }
+
+    .order-details {
+      background-color: #f2f2f2;
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table th,
+    table td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #f5f5f5;
+    }
+
+    .payment-info {
+      text-align: center;
+      color: red;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #4caf50;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    .close-button {
+      background-color: #ff0000db;
+    color: #fff;
+      text-decoration:none;
+      font-size:20px;
+      font-weight: 900;
+      position: fixed;
+      top: 125px;
+      right: 20px;
+      padding: 15px;
+      height:25px;
+      weight:25px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 999; /* Ensure it's above other elements */
+    }
+
+    .close-button:hover {
+      background-color: #999;
+    }
+
+    .qr-code {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .qr-code img {
+      max-width: 200px;
+      height: auto;
+    }
+
+
+  </style>
+
+
+  <div class="container">
+    <a href="/cart" class="close-button">&#10005;</a>
+
+    {% if procude_pg%}
+      <h2 style="color:#279210; text-align:center">❤️Checkout your Purchase With Love❤️</h2><hr>
+      <div class="username">
+        @{{request.user}}
+      </div><hr><br>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="grid">
+          <div class="grid-item">
+            <label for="first_name">First Name *</label>
+            <input type="text" id="first_name" name="fname" value='{{request.user.first_name}}' required>
+          </div>
+          <div class="grid-item">
+            <label for="last_name">Last Name *</label>
+            <input type="text" id="last_name" name="lname"  value='{{request.user.last_name}}' required>
+          </div>
+          <div class="grid-item">
+            <label for="phone">Phone *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+          <div class="grid-item.full">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" value='{{request.user.email}}' required>
+          </div>
+          <hr>
+          <div class="grid-item.full">
+            <input type="checkbox" id="Fillprevious"> <span style="color:green;">Fill previous Data</span>
+            <script>
+
+              Fillprevious= document.querySelector('#Fillprevious') 
+              Fillprevious.addEventListener('click', function() {
+
+                const csrftoken = getCookie('csrftoken');
+                const url = "http://127.0.0.1:8000/get_data";
+                  data={
+                    reason:'get_previous_data'
+                  }
+                  const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(data)
+                };
+
+                  fetch(url, options)
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      console.log(data);
+                  })
+                  {% comment %} .catch(error => {
+                      // Handle errors
+                      console.error('There was a problem with the fetch operation:');
+                  }); {% endcomment %}
+                })
+                function getCookie(name) {
+                  const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                  return cookieValue ? cookieValue.pop() : '';
+              }
+              
+            </script>
+            <br> <br>
+            <label for="country">Country / Region *</label>  
+            <input type="text" id="country" name="country" required>
+          </div>
+          <div class="grid-item">
+            <label for="state">State *</label>
+            <input type="text" id="state" name="state" required>
+          </div>
+          <div class="grid-item">
+            <label for="city">Town / City *</label>
+            <input type="text" id="city" name="city" required>
+          </div>
+          <div class="grid-item">
+            <label for="Street_name">Street Name</label>
+            <input type="text" id="Street_name" name="streetname">
+          </div>
+          <div class="grid-item.full">
+            <label for="full_address">Full Address *</label>
+            <input type="text" id="full_address" name="fulladdress" required>
+          </div>
+
+          <hr>
+
+        </div>
+        <div class="order-details">
+          <h2>Your Order</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                {% for each_items in itemsincart %}
+                <tr>
+                <td>{{ each_items.product.product_name }} x {{ each_items.quantity }} </td>
+                <td>Rs. <span id="totalamt{{each_items.product.id }}" class='each_product'>0</span></td>
+                <script>
+                  totalamt= document.getElementById('totalamt{{each_items.product.id }}');
+                  totalamt.innerText= {{ each_items.product.amount}}* {{ each_items.quantity }};
+                </script>
+              </tr>
+                {% endfor %}
+              
+            </tbody>
+            <tbody>
+              <tr>
+              <td></td> 
+              <td></td> 
+              <tr>
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td><b>Total</b></td>
+                <td >Rs. <b id="full_total"><b></td>
+                <script>
+                                // total amt
+                                sum = 0;
+                                document.querySelectorAll('.each_product').forEach(each_pp => {
+                                    sum += parseFloat(each_pp.innerText);
+                                });
+                                document.getElementById('full_total').innerText = sum;
+                </script>
+              </tr>
+            </tfoot>
+          </table>
+ 
+
+        </div>
+        <label for="order_notes">Order Notes (Optional)</label>
+        <textarea id="order_notes" name="order_notes" rows="4" cols="50"></textarea>
+        <button class="btn">Proceed to Payment</button>
+      </form>
+    {% else%} 
+    <h2 style="color:#279210; text-align:center">❤️Thanks for Purchase ❤️</h2><hr>
+    <div class="username">
+      @{{request.user}}
+    </div><hr><br>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for each_items in itemsincart %}
+        <tr>
+        <td>{{ each_items.product.product_name }} x {{ each_items.quantity }} </td>
+        <td>Rs. <span id="totalamt{{each_items.product.id }}" class='each_product'>0</span></td>
+        <script>
+          totalamt= document.getElementById('totalamt{{each_items.product.id }}');
+          totalamt.innerText= {{ each_items.product.amount}}* {{ each_items.quantity }};
+        </script>
+      </tr>
+        {% endfor %}
+      </tbody>
+      <tbody>
+        <tr>
+        <td></td> 
+        <td></td> 
+        <tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><b>Total</b></td>
+          <td >Rs. <b id="full_total"><b></td>
+          <script>
+                          // total amt
+                          sum = 0;
+                          document.querySelectorAll('.each_product').forEach(each_pp => {
+                              sum += parseFloat(each_pp.innerText);
+                          });
+                          document.getElementById('full_total').innerText = sum;
+          </script>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="shipping" style="border:1px solid green; padding:20px;">
+      <h2>Shipping Details</h2>
+      <p>Shipping Number: {{shipping_info.shipping_number}}</p>
+      <p>Deliver to you on: {{shipping_info.deliver_Date_on}}</p>
+  </div>
+  <div class="contact" style="border:1px solid green; margin:20px 0px; padding:20px;">
+      <h2>Contact</h2>
+      <div>
+          <span for="name">Name:</span>
+          <span id="name">{{checkoutinfo.user.first_name}} {{checkoutinfo.user.last_name}}</span>
+      </div>
+      <div>
+          <span for="email">Email:</span>
+          <span id="email">{{checkoutinfo.shipemail}}</span>
+      </div>
+      <div>
+          <span for="phnumber">Phone Number:</span>
+          <span id="phnumber">{{checkoutinfo.Phonenum}}</span>
+      </div>
+  </div>
+
+  
+
+        <div class="qr-code">
+      <img src= "https://api.qrserver.com/v1/create-qr-code/?data=Shipping num:{{shipping_info.shipping_number}};  Deliver to you on: {{shipping_info.deliver_Date_on}};Nmae: {{checkoutinfo.user.first_name}} {{checkoutinfo.user.last_name}} ;  Email: {{checkoutinfo.shipemail}}  ;PHone num: {{checkoutinfo.Phonenum}}"&size=200x200" alt="QR Code">
+    </div>
+    {% endif %}
+  </div>
+
+
+  {% endblock %}
+
